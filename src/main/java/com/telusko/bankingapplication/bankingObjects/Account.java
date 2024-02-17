@@ -10,15 +10,17 @@ public class Account {
     private long id;
     private long user_id;
     private double balance;
+    private String accountNo;
 
     public Account(){
 
     }
 
-    public Account(long id, long user_id, double balance){
+    public Account(long id, long user_id, double balance, String accountNo){
         this.id = id;
         this.user_id = user_id;
         this.balance = balance;
+        this.accountNo = accountNo;
     }
 
     @Id
@@ -49,5 +51,14 @@ public class Account {
         this.balance = balance;
     }
 
+
+    @Column(name = "account_no", nullable = false)
+    public String getAccountNo(){
+        return accountNo;
+    }
+
+    public void setAccountNo(String accountNo) {
+        this.accountNo = accountNo;
+    }
 
 }

@@ -17,6 +17,7 @@ import com.telusko.bankingapplication.repositories.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @RestController
@@ -82,8 +83,35 @@ public class Controller {
         Account account = new Account();
         account.setBalance(balance);
         account.setUserId(user_id);
+        account.setAccountNo(generateRandom10DigitNumber());
         accountRepository.save(account);
     return "Account Created Successfully";
+    }
+    // Method to generate a random 10-digit number for Account Id
+    private String generateRandom10DigitNumber() {
+        Random random = new Random();
+        long randomNumber = random.nextLong() % 10000000000L; // Ensure it's 10 digits
+        if(randomNumber < 0) {
+            randomNumber *= -1;
+        }
+        return String.format("%010d", randomNumber);
+    }
+    @RequestMapping("/addloan")
+    public Loan getLoan(@RequestParam("userId") long userId, @RequestParam("sanctionAmount") Double sanctionAmount) {
+        List<Account> accounts = accountRepository.findAll();
+        List<Account> userAccounts = accounts.stream().filter(account1 -> account1.getUserId() == userId).collect(Collectors.toList());
+        double totalBalance = 0;
+        for (Account userAccount : userAccounts) {
+            totalBalance += userAccount.getBalance();
+        }
+        if (2*sanctionAmount < totalBalance) {
+            Loan loan = new Loan();
+            loan.setSanctionAmount(sanctionAmount);
+            loan.setUserId(userId);
+            return loanRepository.save(loan);
+        }
+        System.out.println("Loan amount requested exceeds limit!");
+        return null;
     }
 
 }
