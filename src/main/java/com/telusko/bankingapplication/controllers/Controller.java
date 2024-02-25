@@ -97,7 +97,10 @@ public class Controller {
         return String.format("%010d", randomNumber);
     }
     @RequestMapping("/addloan")
-    public Loan getLoan(@RequestParam("userId") long userId, @RequestParam("sanctionAmount") Double sanctionAmount) {
+    public String getLoan(@RequestParam("userId") long userId, @RequestParam("sanctionAmount") Double sanctionAmount) {
+        if (!userRepository.existsById(userId)) {
+            return "User with user id Not Found :(";
+        }
         List<Account> accounts = accountRepository.findAll();
         List<Account> userAccounts = accounts.stream().filter(account1 -> account1.getUserId() == userId).collect(Collectors.toList());
         double totalBalance = 0;
@@ -108,10 +111,11 @@ public class Controller {
             Loan loan = new Loan();
             loan.setSanctionAmount(sanctionAmount);
             loan.setUserId(userId);
-            return loanRepository.save(loan);
+            loanRepository.save(loan);
+            return "Loan Amount Aproved";
         }
-        System.out.println("Loan amount requested exceeds limit!");
-        return null;
+        return "Loan amount requested exceeds limit!";
+
     }
 
 }
