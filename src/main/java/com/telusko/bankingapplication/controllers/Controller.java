@@ -117,6 +117,34 @@ public class Controller {
         return "Loan amount requested exceeds limit!";
 
     }
+    @RequestMapping(value = "/depositmoney")
+    public String depositMoney(@RequestParam(value = "accountId") String accountId, @RequestParam("amount") double amount) throws ResourceNotFoundException {
+        Account account = accountRepository.findByAccountNo(accountId);
+
+        if(account==null){
+        throw new ResourceNotFoundException("Account not for for this id :: " + accountId);
+        }
+        double initialBalance = account.getBalance();
+        account.setBalance(initialBalance+amount);
+        accountRepository.save(account);
+        return "Amount Deposited successfully in Account";
+    }
+
+    @RequestMapping(value = "/withdrawmoney")
+    public String withdrawMoney(@RequestParam(value = "accountId") String accountId, @RequestParam("amount") double amount) throws ResourceNotFoundException {
+        Account account = accountRepository.findByAccountNo(accountId);
+        if(account == null){
+        throw new ResourceNotFoundException("Account not for for this id :: " + accountId);
+        }
+        double initialBalance = account.getBalance();
+        if (amount > initialBalance) {
+            return "Withdrawal amount exceeded";
+
+        }
+        account.setBalance(initialBalance-amount);
+        accountRepository.save(account);
+        return "Amount Withdraw successful for Account";
+    }
 
 }
 
