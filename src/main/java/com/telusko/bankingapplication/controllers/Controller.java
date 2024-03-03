@@ -102,9 +102,16 @@ public class Controller {
         return String.format("%010d", randomNumber);
     }
     @RequestMapping("/addloan")
-    public String getLoan(@RequestParam("userId") long userId, @RequestParam("sanctionAmount") Double sanctionAmount) {
+    public String getLoan(@RequestParam("userId") long userId,  @RequestParam("accountNumber") String accountNumber, @RequestParam("PIN") String PIN,@RequestParam("sanctionAmount") Double sanctionAmount) {
         if (!userRepository.existsById(userId)) {
             return "User with user id Not Found :(";
+        }
+        if (!accountRepository.existsByAccountNo(accountNumber)) {
+            return "Account Not Found :(";
+        }
+        Account account = accountRepository.findByAccountNo(accountNumber);
+        if(!account.getPIN().trim().equals(PIN.trim())){
+            return "Incorrect PIN :(";
         }
         List<Account> accounts = accountRepository.findAll();
         List<Account> userAccounts = accounts.stream().filter(account1 -> account1.getUserId() == userId).collect(Collectors.toList());
