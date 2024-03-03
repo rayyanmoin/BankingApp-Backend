@@ -12,15 +12,18 @@ public class Account {
     private double balance;
     private String accountNo;
 
+    private String PIN;
+
     public Account(){
 
     }
 
-    public Account(long id, long user_id, double balance, String accountNo){
+    public Account(long id, long user_id, double balance, String accountNo, String PIN){
         this.id = id;
         this.user_id = user_id;
         this.balance = balance;
         this.accountNo = accountNo;
+        this.PIN = PIN;
     }
 
     @Id
@@ -61,4 +64,13 @@ public class Account {
         this.accountNo = accountNo;
     }
 
+
+    @Column(name = "PIN", nullable = false)
+    public String getPIN(){
+        return PIN;
+    }
+
+    public void setPIN(String PIN) {
+        this.PIN = PIN;
+    }
 }

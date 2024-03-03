@@ -16,6 +16,7 @@ import com.telusko.bankingapplication.repositories.LoanRepository;
 import com.telusko.bankingapplication.repositories.UserRepository;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -70,7 +71,7 @@ public class Controller {
 
 
     @RequestMapping("/addAccount")
-    public String addAccount(@RequestParam("user_id") long user_id, @RequestParam("balance") Double balance) {
+    public String addAccount(@RequestParam("user_id") long user_id, @RequestParam("balance") Double balance, @RequestParam("PIN") String PIN) {
         if (!userRepository.existsById(user_id)) {
             return "User with user id Not Found :(";
         }
@@ -80,10 +81,14 @@ public class Controller {
         if (userAccounts.size() >= 3) {
             return "You cannot make more than 3 Accounts in this user Id ";
         }
+        if (PIN.length() > 4||PIN.length() < 4 ) {
+            return "PIN should be exact four digit";
+        }
         Account account = new Account();
         account.setBalance(balance);
         account.setUserId(user_id);
         account.setAccountNo(generateRandom10DigitNumber());
+        account.setPIN(PIN);
         accountRepository.save(account);
     return "Account Created Successfully";
     }
@@ -118,32 +123,46 @@ public class Controller {
 
     }
     @RequestMapping(value = "/depositmoney")
-    public String depositMoney(@RequestParam(value = "accountId") String accountId, @RequestParam("amount") double amount) throws ResourceNotFoundException {
+    public String depositMoney(@RequestParam(value = "accountId") String accountId, @RequestParam("amount") double amount, @RequestParam("PIN") String PIN) throws ResourceNotFoundException {
         Account account = accountRepository.findByAccountNo(accountId);
 
-        if(account==null){
-        throw new ResourceNotFoundException("Account not for for this id :: " + accountId);
+        if (account == null) {
+            throw new ResourceNotFoundException("Account not for for this id :: " + accountId);
         }
-        double initialBalance = account.getBalance();
-        account.setBalance(initialBalance+amount);
-        accountRepository.save(account);
-        return "Amount Deposited successfully in Account";
+        // account found
+        // PIN check
+        // Request Param PIN compare account.getPIN()
+        // equal ok
+        // if not return "Incorrect PIN"
+
+        if (account.getPIN().equals(PIN)) {
+            double initialBalance = account.getBalance();
+            account.setBalance(initialBalance + amount);
+            accountRepository.save(account);
+            return "Amount Deposited successfully in Account";
+        }
+
+        return "Incorrect PIN :(";
     }
 
     @RequestMapping(value = "/withdrawmoney")
-    public String withdrawMoney(@RequestParam(value = "accountId") String accountId, @RequestParam("amount") double amount) throws ResourceNotFoundException {
+    public String withdrawMoney(@RequestParam(value = "accountId") String accountId, @RequestParam("amount") double amount, @RequestParam("PIN") String PIN) throws ResourceNotFoundException {
         Account account = accountRepository.findByAccountNo(accountId);
         if(account == null){
         throw new ResourceNotFoundException("Account not for for this id :: " + accountId);
         }
-        double initialBalance = account.getBalance();
-        if (amount > initialBalance) {
-            return "Withdrawal amount exceeded";
+        // PIN check same as deposit
+        if (account.getPIN().equals(PIN)) {
+            double initialBalance = account.getBalance();
+            if (amount > initialBalance) {
+                return "Withdrawal amount exceeded";
 
+            }
+            account.setBalance(initialBalance-amount);
+            accountRepository.save(account);
+            return "Amount Withdraw successful for Account";
         }
-        account.setBalance(initialBalance-amount);
-        accountRepository.save(account);
-        return "Amount Withdraw successful for Account";
+        return "Cannot withdraw PIN error:(";
     }
 
 }
