@@ -55,7 +55,10 @@ public class Controller {
     }
 
     @RequestMapping("/addUser")
-    public String addUser(@RequestParam("name") String name, @RequestParam("status") String status, @RequestParam("CNIC") String CNIC) {
+    public String addUser(@RequestParam("name") String name, @RequestParam("status") String status, @RequestParam("CNIC") String CNIC,
+                          @RequestParam("fatherName") String fatherName, @RequestParam("phoneNo") String phoneNo,
+                          @RequestParam("gender") String gender, @RequestParam("profession") String profession,
+                          @RequestParam("age") Integer age) {
 
         if (userRepository.existsByCNIC(CNIC)) {
             return "CNIC already Exits";
@@ -65,6 +68,12 @@ public class Controller {
         user.setName(name);
         user.setStatus(status);
         user.setCNIC(CNIC);
+        user.setFatherName(fatherName);
+        user.setPhoneNo(phoneNo);
+        user.setGender(gender);
+        user.setProfession(profession);
+        user.setAge(age);
+
         userRepository.save(user);
         return "User Added Successfully";
     }
