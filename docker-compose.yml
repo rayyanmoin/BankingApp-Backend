@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  bankingapp:
+    image: bankingapp:latest
+    container_name: bankingapp
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://host.docker.internal:3306/bankingapplication
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root@123
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    networks:
+      - banking-network
+
+networks:
+  banking-network:
+    driver: bridge
