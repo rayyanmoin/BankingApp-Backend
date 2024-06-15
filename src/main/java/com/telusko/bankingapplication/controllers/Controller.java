@@ -15,10 +15,7 @@ import com.telusko.bankingapplication.repositories.AccountRepository;
 import com.telusko.bankingapplication.repositories.LoanRepository;
 import com.telusko.bankingapplication.repositories.UserRepository;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -179,6 +176,22 @@ public class Controller {
             return "Amount Withdraw successful for Account";
         }
         return "Cannot withdraw PIN error:(";
+    }
+    @GetMapping("/usersForDropdown")
+    public List<Map<String, Object>> getUsers() {
+        List<User> users = userRepository.findAll().stream()
+                .filter(user -> "active".equalsIgnoreCase(user.getStatus()))
+                .collect(Collectors.toList());;
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        for (User user : users) {
+            Map<String, Object> userMap = new HashMap<>();
+            userMap.put("id", user.getId());
+            userMap.put("username", user.getName());
+            result.add(userMap);
+        }
+
+        return result;
     }
 
 }
