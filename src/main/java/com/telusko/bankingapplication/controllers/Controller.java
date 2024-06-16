@@ -1,15 +1,13 @@
 package com.telusko.bankingapplication.controllers;
 
 import com.fasterxml.jackson.databind.JsonSerializer;
+import com.telusko.bankingapplication.bankingObjects.*;
+import com.telusko.bankingapplication.repositories.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.telusko.bankingapplication.bankingObjects.Account;
-import com.telusko.bankingapplication.bankingObjects.Amount;
-import com.telusko.bankingapplication.bankingObjects.Loan;
-import com.telusko.bankingapplication.bankingObjects.User;
 import com.telusko.bankingapplication.exceptions.ResourceNotFoundException;
 import com.telusko.bankingapplication.repositories.AccountRepository;
 import com.telusko.bankingapplication.repositories.LoanRepository;
@@ -32,6 +30,9 @@ public class Controller {
     @Autowired
     private LoanRepository loanRepository;
 
+    @Autowired
+    private CustomerRepository customerRepository;
+
 
     @GetMapping("/users")
     public List<User> getUser() {
@@ -49,6 +50,12 @@ public class Controller {
     public List<Loan> getLoan() {
         List<Loan> loans = loanRepository.findAll();
         return loans;
+    }
+
+    @GetMapping("/customer")
+    public List<CustomerHelp> getCustomerHelp() {
+        List<CustomerHelp> customers =  customerRepository.findAll();
+        return customers;
     }
 
     @RequestMapping("/addUser")
@@ -192,6 +199,11 @@ public class Controller {
         }
 
         return result;
+    }
+    @PostMapping("customer/save")
+    public String createCustomerHelpRequest(@RequestBody CustomerHelp customerHelp) {
+        customerRepository.save(customerHelp);
+        return "Customer Help record save successfully";
     }
 
 }
